@@ -1,4 +1,4 @@
-package com.github.thibseisel.mediaxplore.utils
+package com.github.thibseisel.mediaxplore.koroutines
 
 import android.arch.lifecycle.ViewModel
 import kotlinx.coroutines.experimental.CoroutineScope

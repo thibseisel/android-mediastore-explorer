@@ -3,6 +3,9 @@ package com.github.thibseisel.mediaxplore.mailing
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.text.Html
+import android.text.Spanned
 import com.github.thibseisel.mediaxplore.R
 import com.github.thibseisel.mediaxplore.media.Album
 import com.github.thibseisel.mediaxplore.media.Artist
@@ -16,9 +19,9 @@ class Mailer(private val context: Context) {
         val message = buildTextContent(artists, albums)
 
         val sendEmailIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "plain/text"
+            type = "text/html"
             putExtra(Intent.EXTRA_SUBJECT, subject)
-            putExtra(Intent.EXTRA_TEXT,  message)
+            putExtra(Intent.EXTRA_TEXT,  message.toHtml())
         }
 
         val toMailApp = Intent.createChooser(sendEmailIntent, null)
@@ -26,11 +29,18 @@ class Mailer(private val context: Context) {
     }
 
     private fun buildTextContent(artists: List<Artist>, albums: List<Album>): String = buildString {
-        appendHTML(prettyPrint = false, xhtmlCompatible = true).div {
-            h1 { + "Artists" }
-            artistTable(artists)
-            h1 { + "Albums" }
-            albumTable(albums)
+        appendHTML(prettyPrint = true, xhtmlCompatible = true).html {
+            head {
+                meta(content = "text/html", charset = "UTF-8")
+            }
+            body {
+                div {
+                    h1 { + "Artists" }
+                    artistTable(artists)
+                    h1 { + "Albums" }
+                    albumTable(albums)
+                }
+            }
         }
     }
 
@@ -100,4 +110,11 @@ class Mailer(private val context: Context) {
                     ?: Mailer(context).also { instance = it }
         }
     }
+}
+
+private fun String.toHtml(): Spanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    Html.fromHtml(this, Html.FROM_HTML_MODE_COMPACT)
+} else {
+    @Suppress("DEPRECATION")
+    Html.fromHtml(this)
 }

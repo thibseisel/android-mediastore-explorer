@@ -4,9 +4,9 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import com.github.thibseisel.mediaxplore.koroutines.ScopedViewModel
 import com.github.thibseisel.mediaxplore.media.Album
 import com.github.thibseisel.mediaxplore.media.MediaDao
-import com.github.thibseisel.mediaxplore.utils.ScopedViewModel
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.launch
 
