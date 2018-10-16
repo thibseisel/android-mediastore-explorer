@@ -3,14 +3,9 @@ package com.github.thibseisel.mediaxplore.mailing
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.text.Html
-import android.text.Spanned
 import com.github.thibseisel.mediaxplore.R
 import com.github.thibseisel.mediaxplore.media.Album
 import com.github.thibseisel.mediaxplore.media.Artist
-import kotlinx.html.*
-import kotlinx.html.stream.appendHTML
 
 class Mailer(private val context: Context) {
 
@@ -19,9 +14,9 @@ class Mailer(private val context: Context) {
         val message = buildTextContent(artists, albums)
 
         val sendEmailIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/html"
+            type = "text/plain"
             putExtra(Intent.EXTRA_SUBJECT, subject)
-            putExtra(Intent.EXTRA_TEXT,  message.toHtml())
+            putExtra(Intent.EXTRA_TEXT,  message)
         }
 
         val toMailApp = Intent.createChooser(sendEmailIntent, null)
@@ -29,75 +24,127 @@ class Mailer(private val context: Context) {
     }
 
     private fun buildTextContent(artists: List<Artist>, albums: List<Album>): String = buildString {
-        appendHTML(prettyPrint = true, xhtmlCompatible = true).html {
-            head {
-                meta(content = "text/html", charset = "UTF-8")
-            }
-            body {
-                div {
-                    h1 { + "Artists" }
-                    artistTable(artists)
-                    h1 { + "Albums" }
-                    albumTable(albums)
-                }
-            }
-        }
+        appendHeading("Artists")
+        artistTable(artists)
+
+        appendHeading("Albums")
+        albumTable(albums)
     }
 
-    private fun DIV.artistTable(artists: List<Artist>) {
-        table {
-            thead {
-                tr {
-                    th { + "ID" }
-                    th { + "Name" }
-                    th { + "Sort key" }
-                    th { + "Songs" }
-                    th { + "Albums" }
-                }
-            }
-
-            tbody {
-                for (artist in artists) {
-                    tr {
-                        td { + artist.id.toString() }
-                        td { + artist.name.orEmpty() }
-                        td { + artist.sortKey.orEmpty() }
-                        td { + artist.trackCount.toString() }
-                        td { + artist.albumCount.toString() }
-                    }
-                }
-            }
-        }
+    private fun Appendable.appendHeading(title: String) {
+        append(3 * '#')
+        append(' ')
+        append(title)
+        append(' ')
+        append(3 * '#')
+        appendln()
     }
 
-    private fun DIV.albumTable(albums: List<Album>) {
-        table {
-            thead {
-                tr {
-                    th { + "ID" }
-                    th { + "Title" }
-                    th { + "Sort key" }
-                    th { + "Artist" }
-                    th { + "Year" }
-                    th { + "Album Art" }
-                    th { + "Number of songs" }
-                }
+    private fun Appendable.artistTable(artists: List<Artist>) {
+        val headers = arrayOf("ID", "Name", "Tracks", "Albums")
+        val columnValues = arrayOf(
+                artists.map { it.id.toString() },
+                artists.map { it.name.orEmpty() },
+                artists.map { it.trackCount.toString() },
+                artists.map { it.albumCount.toString() }
+        )
+
+        val columnWidths = IntArray(headers.size) { maxColumnWidth(headers[it], columnValues[it]) }
+        for (colIndex in headers.indices) {
+            val header = headers[colIndex]
+            val colWidth = columnWidths[colIndex]
+            val emptySpaces = colWidth - header.length
+
+            if (colIndex == 0) {
+                append('|')
             }
 
-            tbody {
-                for (album in albums) {
-                    tr {
-                        td { + album.id.toString() }
-                        td { + album.title.orEmpty() }
-                        td { + album.sortKey.orEmpty() }
-                        td { + album.artist.orEmpty() }
-                        td { + "${album.firstYear} - ${album.lastYear}"}
-                        td { + album.albumArt.orEmpty() }
-                        td { + album.numberOfSongs.toString() }
-                    }
-                }
-            }
+            append(emptySpaces * ' ')
+            append(header)
+            append('|')
         }
+
+        appendln()
+
+        val totalWidth = columnWidths.sum() + headers.size + 1
+        append(totalWidth * '-')
+        appendln()
+
+        for (lineIndex in artists.indices) {
+
+            for (colIndex in headers.indices) {
+                val colWidth = columnWidths[colIndex]
+                val colValue = columnValues[colIndex][lineIndex]
+                val emptySpaces = colWidth - colValue.length
+
+                if (colIndex == 0) {
+                    append('|')
+                }
+
+                append(emptySpaces * ' ')
+                append(colValue)
+                append('|')
+            }
+
+            appendln()
+        }
+
+        appendln()
+    }
+
+    private fun Appendable.albumTable(albums: List<Album>) {
+        val headers = arrayOf("ID", "Title", "Tracks", "Year", "Album art")
+        val columnValues = arrayOf(
+                albums.map { it.id.toString() },
+                albums.map { it.title.orEmpty() },
+                albums.map { it.numberOfSongs.toString() },
+                albums.map { "${it.firstYear} - ${it.lastYear}" },
+                albums.map { it.albumArt.orEmpty() }
+        )
+
+        val columnWidths = IntArray(headers.size) { maxColumnWidth(headers[it], columnValues[it]) }
+        for (colIndex in headers.indices) {
+            val header = headers[colIndex]
+            val colWidth = columnWidths[colIndex]
+            val emptySpaces = colWidth - header.length
+
+            if (colIndex == 0) {
+                append('|')
+            }
+
+            append(emptySpaces * ' ')
+            append(header)
+            append('|')
+        }
+
+        val totalWidth = columnWidths.sum() + headers.size + 1
+        appendln()
+        append(totalWidth * '-')
+
+        for (colIndex in headers.indices) {
+
+            for (lineIndex in albums.indices) {
+                val colWidth = columnWidths[colIndex]
+                val colValue = columnValues[colIndex][lineIndex]
+                val emptySpaces = colWidth - colValue.length
+
+                if (colIndex == 0) {
+                    append('|')
+                }
+
+                append(emptySpaces * ' ')
+                append(colValue)
+                append('|')
+            }
+
+            appendln()
+        }
+
+        appendln()
+    }
+
+    private fun maxColumnWidth(header: String, values: List<String>): Int {
+        return values.fold(header.length) { acc, value -> maxOf(acc, value.length)}
     }
 
     companion object {
@@ -112,9 +159,8 @@ class Mailer(private val context: Context) {
     }
 }
 
-private fun String.toHtml(): Spanned = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-    Html.fromHtml(this, Html.FROM_HTML_MODE_COMPACT)
-} else {
-    @Suppress("DEPRECATION")
-    Html.fromHtml(this)
+private operator fun Int.times(ch: Char): String {
+    val length = this.coerceAtLeast(0)
+    val array = CharArray(length) { ch }
+    return String(array)
 }
