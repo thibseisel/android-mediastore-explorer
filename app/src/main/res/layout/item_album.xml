@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="72dp"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp">
+
+    <TextView
+        android:id="@+id/albumTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        app:layout_constraintBottom_toTopOf="@id/albumInfo"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        android:ellipsize="end"
+        android:maxLines="1"
+        tools:text="The Black Album" />
+
+    <TextView
+        android:id="@+id/albumInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+        app:layout_constraintBottom_toTopOf="@id/albumArtPath"
+        app:layout_constraintTop_toBottomOf="@id/albumTitle"
+        app:layout_constraintVertical_chainStyle="packed"
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="11 tracks - 16 for artist" />
+
+    <TextView
+        android:id="@+id/albumArtPath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/albumInfo"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="/sdcard/media/125838320/art.png" />
+
+    <TextView
+        android:id="@+id/albumYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+        app:layout_constraintBottom_toBottomOf="@id/albumTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toEndOf="@id/albumTitle"
+        app:layout_constraintTop_toTopOf="@id/albumTitle"
+        tools:text="1994-2018" />
+
+</android.support.constraint.ConstraintLayout>
