@@ -3,6 +3,10 @@ package com.github.thibseisel.mediaxplore.mailing
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.TypefaceSpan
 import com.github.thibseisel.mediaxplore.R
 import com.github.thibseisel.mediaxplore.media.Album
 import com.github.thibseisel.mediaxplore.media.Artist
@@ -14,9 +18,10 @@ class Mailer(private val context: Context) {
         val message = buildTextContent(artists, albums)
 
         val sendEmailIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
+            type = "text/html"
             putExtra(Intent.EXTRA_SUBJECT, subject)
             putExtra(Intent.EXTRA_TEXT,  message)
+            putExtra(Intent.EXTRA_HTML_TEXT, message.monospaced())
         }
 
         val toMailApp = Intent.createChooser(sendEmailIntent, null)
@@ -24,19 +29,17 @@ class Mailer(private val context: Context) {
     }
 
     private fun buildTextContent(artists: List<Artist>, albums: List<Album>): String = buildString {
-        appendHeading("Artists")
+        heading("Artists")
         artistTable(artists)
 
-        appendHeading("Albums")
+        heading("Albums")
         albumTable(albums)
     }
 
-    private fun Appendable.appendHeading(title: String) {
-        append(3 * '#')
-        append(' ')
-        append(title)
-        append(' ')
-        append(3 * '#')
+    private fun Appendable.heading(title: String) {
+        appendln()
+        append(3 * '#').append(' ').append(title).append(' ').append(3 * '#')
+        appendln()
         appendln()
     }
 
@@ -121,9 +124,9 @@ class Mailer(private val context: Context) {
         appendln()
         append(totalWidth * '-')
 
-        for (colIndex in headers.indices) {
+        for (lineIndex in albums.indices) {
 
-            for (lineIndex in albums.indices) {
+            for (colIndex in headers.indices) {
                 val colWidth = columnWidths[colIndex]
                 val colValue = columnValues[colIndex][lineIndex]
                 val emptySpaces = colWidth - colValue.length
@@ -163,4 +166,10 @@ private operator fun Int.times(ch: Char): String {
     val length = this.coerceAtLeast(0)
     val array = CharArray(length) { ch }
     return String(array)
+}
+
+private fun String.monospaced(): Spanned = SpannableString(this).apply {
+    val monospacedString = SpannableString(this)
+    val textSpan = TypefaceSpan(Typeface.MONOSPACE)
+    monospacedString.setSpan(textSpan, 0, monospacedString.lastIndex, 0)
 }
