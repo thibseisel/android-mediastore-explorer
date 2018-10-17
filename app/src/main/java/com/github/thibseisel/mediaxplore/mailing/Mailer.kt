@@ -169,7 +169,6 @@ private operator fun Int.times(ch: Char): String {
 }
 
 private fun String.monospaced(): Spanned = SpannableString(this).apply {
-    val monospacedString = SpannableString(this)
     val textSpan = TypefaceSpan(Typeface.MONOSPACE)
-    monospacedString.setSpan(textSpan, 0, monospacedString.lastIndex, 0)
+    setSpan(textSpan, 0, this.lastIndex, 0)
 }
