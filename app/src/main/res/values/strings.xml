@@ -6,6 +6,15 @@
     <string name="albumInfo">%d tracks</string>
     <string name="yearRange">%04d - %04d</string>
     <string name="artistInfo">%d tracks - %d albums</string>
+    <string name="filter_default">Default</string>
+    <string name="action_sort_albums">Sort albums</string>
+    <string name="action_sort_artists">Sort artists</string>
+    <string name="filter_title">Title</string>
+    <string name="filter_year">Release year</string>
+    <string name="filter_song_count">Number of songs</string>
+    <string name="filter_name">Artist name</string>
+    <string name="filter_album_count">Number of albums</string>
+    <string name="filter_artist">Artist name</string>
 
     <style name="mail_subject">A copy of my MediaStore for debugging purposes</style>
 </resources>

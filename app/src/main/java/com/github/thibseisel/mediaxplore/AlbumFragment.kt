@@ -9,9 +9,7 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import com.github.thibseisel.mediaxplore.media.Album
 import com.github.thibseisel.mediaxplore.utils.Injector
@@ -45,6 +43,19 @@ class AlbumFragment : Fragment() {
                 adapter.submitList(albums)
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_album_filtering, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (viewModel.handleSortingChange(item.itemId)) {
+            item.isChecked = true
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }
 

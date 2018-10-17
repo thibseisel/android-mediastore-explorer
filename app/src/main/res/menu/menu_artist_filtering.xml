@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_sort_24dp"
+        android:title="@string/action_sort_artists"
+        app:showAsAction="ifRoom">
+        <menu>
+            <group android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/filter_default"
+                    android:title="@string/filter_default" />
+
+                <item
+                    android:id="@+id/filter_name"
+                    android:title="@string/filter_name" />
+
+                <item
+                    android:id="@+id/filter_song_count"
+                    android:title="@string/filter_song_count" />
+
+                <item
+                    android:id="@+id/filter_album_count"
+                    android:title="@string/filter_album_count" />
+            </group>
+        </menu>
+    </item>
+</menu>
