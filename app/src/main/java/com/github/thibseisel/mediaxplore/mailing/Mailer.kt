@@ -12,6 +12,11 @@ import com.github.thibseisel.mediaxplore.media.Artist
 
 private const val TYPEFACE_MONOSPACE = "monospace"
 
+private fun String.monospaced(): Spanned = SpannableString(this).apply {
+    val textSpan = TypefaceSpan(TYPEFACE_MONOSPACE)
+    setSpan(textSpan, 0, this.lastIndex, 0)
+}
+
 class Mailer(private val context: Context) {
 
     fun sendMediaByEmail(artists: List<Artist>, albums: List<Album>) {
@@ -30,125 +35,90 @@ class Mailer(private val context: Context) {
     }
 
     private fun buildTextContent(artists: List<Artist>, albums: List<Album>): String = buildString {
-        heading("Artists")
-        artistTable(artists)
+        appendHeading("Artists")
+        appendTable(artists, "ID", "Name", "Tracks", "Albums") { artist, output ->
+            output[0] = artist.id.toString()
+            output[1] = artist.name.orEmpty()
+            output[2] = artist.trackCount.toString()
+            output[3] = artist.albumCount.toString()
+        }
 
-        heading("Albums")
-        albumTable(albums)
+        appendHeading("Albums")
+        appendTable(albums, "ID", "Title", "Artist", "Tracks", "Year", "Album art") { album, output ->
+            output[0] = album.id.toString()
+            output[1] = album.title.orEmpty()
+            output[2] = album.artist.orEmpty()
+            output[3] = album.numberOfSongs.toString()
+            output[4] = "${album.firstYear} - ${album.lastYear}"
+            output[5] = album.albumArt.orEmpty()
+        }
     }
 
-    private fun Appendable.heading(title: String) {
+    private fun Appendable.appendHeading(title: String) {
         appendln()
-        append(3 * '#').append(' ').append(title).append(' ').append(3 * '#')
+        this + (3 * '#') + ' ' + title + ' ' + (3 * '#')
         appendln()
         appendln()
     }
 
-    private fun Appendable.artistTable(artists: List<Artist>) {
-        val headers = arrayOf("ID", "Name", "Tracks", "Albums")
-        val columnValues = arrayOf(
-                artists.map { it.id.toString() },
-                artists.map { it.name.orEmpty() },
-                artists.map { it.trackCount.toString() },
-                artists.map { it.albumCount.toString() }
-        )
+    private inline fun <T> Appendable.appendTable(
+            values: List<T>,
+            vararg columnHeaders: String,
+            columnValueProvider: (value: T, output: Array<String>) -> Unit
+    ) {
+        val emptyString = ""
+        val tableValues = Array(values.size) { lineIndex ->
+            Array(columnHeaders.size) { emptyString }.also { output ->
+                columnValueProvider(values[lineIndex], output)
+            }
+        }
 
-        val columnWidths = IntArray(headers.size) { maxColumnWidth(headers[it], columnValues[it]) }
-        for (colIndex in headers.indices) {
-            val header = headers[colIndex]
+        appendTableInternal(columnHeaders, tableValues)
+    }
+
+    private fun Appendable.appendTableInternal(
+            columnHeaders: Array<out String>,
+            tableValues: Array<Array<String>>
+    ) {
+        val columnWidths = IntArray(columnHeaders.size) { colIndex ->
+            tableValues.fold(columnHeaders[colIndex].length) { acc, valueLine ->
+                maxOf(acc, valueLine[colIndex].length)
+            }
+        }
+
+        for (colIndex in columnHeaders.indices) {
+            val header = columnHeaders[colIndex]
             val colWidth = columnWidths[colIndex]
             val emptySpaces = colWidth - header.length
 
             if (colIndex == 0) {
-                append('|')
+                this + '|'
             }
 
-            append(emptySpaces * ' ')
-            append(header)
-            append('|')
+            this + (emptySpaces * ' ') + header + '|'
         }
 
         appendln()
 
-        val totalWidth = columnWidths.sum() + headers.size + 1
-        append(totalWidth * '-')
+        val totalWidth = columnWidths.sum() + columnHeaders.size + 1
+        this + (totalWidth * '-')
         appendln()
 
-        for (lineIndex in artists.indices) {
+        for (lineValues in tableValues) {
 
-            for (colIndex in headers.indices) {
+            for ((colIndex, value) in lineValues.withIndex()) {
                 val colWidth = columnWidths[colIndex]
-                val colValue = columnValues[colIndex][lineIndex]
-                val emptySpaces = colWidth - colValue.length
+                val emptySpaces = colWidth - value.length
 
                 if (colIndex == 0) {
-                    append('|')
+                    this + '|'
                 }
 
-                append(emptySpaces * ' ')
-                append(colValue)
-                append('|')
+                this + (emptySpaces * ' ') + value + '|'
             }
 
             appendln()
         }
-
-        appendln()
-    }
-
-    private fun Appendable.albumTable(albums: List<Album>) {
-        val headers = arrayOf("ID", "Title", "Tracks", "Year", "Album art")
-        val columnValues = arrayOf(
-                albums.map { it.id.toString() },
-                albums.map { it.title.orEmpty() },
-                albums.map { it.numberOfSongs.toString() },
-                albums.map { "${it.firstYear} - ${it.lastYear}" },
-                albums.map { it.albumArt.orEmpty() }
-        )
-
-        val columnWidths = IntArray(headers.size) { maxColumnWidth(headers[it], columnValues[it]) }
-        for (colIndex in headers.indices) {
-            val header = headers[colIndex]
-            val colWidth = columnWidths[colIndex]
-            val emptySpaces = colWidth - header.length
-
-            if (colIndex == 0) {
-                append('|')
-            }
-
-            append(emptySpaces * ' ')
-            append(header)
-            append('|')
-        }
-
-        val totalWidth = columnWidths.sum() + headers.size + 1
-        appendln()
-        append(totalWidth * '-')
-
-        for (lineIndex in albums.indices) {
-
-            for (colIndex in headers.indices) {
-                val colWidth = columnWidths[colIndex]
-                val colValue = columnValues[colIndex][lineIndex]
-                val emptySpaces = colWidth - colValue.length
-
-                if (colIndex == 0) {
-                    append('|')
-                }
-
-                append(emptySpaces * ' ')
-                append(colValue)
-                append('|')
-            }
-
-            appendln()
-        }
-
-        appendln()
-    }
-
-    private fun maxColumnWidth(header: String, values: List<String>): Int {
-        return values.fold(header.length) { acc, value -> maxOf(acc, value.length)}
     }
 
     companion object {
@@ -161,15 +131,4 @@ class Mailer(private val context: Context) {
                     ?: Mailer(context).also { instance = it }
         }
     }
-}
-
-private operator fun Int.times(ch: Char): String {
-    val length = this.coerceAtLeast(0)
-    val array = CharArray(length) { ch }
-    return String(array)
-}
-
-private fun String.monospaced(): Spanned = SpannableString(this).apply {
-    val textSpan = TypefaceSpan(TYPEFACE_MONOSPACE)
-    setSpan(textSpan, 0, this.lastIndex, 0)
 }
