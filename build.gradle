@@ -8,6 +8,7 @@ buildscript {
         lifecycle_version = '1.1.1'
         koroutines_version = '0.30.2'
         kotlinx_html_version = '0.6.11'
+        truth_version = '0.42'
     }
 
     repositories {

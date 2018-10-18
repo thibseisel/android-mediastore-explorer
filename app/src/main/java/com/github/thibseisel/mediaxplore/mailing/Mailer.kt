@@ -66,9 +66,8 @@ class Mailer(private val context: Context) {
             vararg columnHeaders: String,
             columnValueProvider: (value: T, output: Array<String>) -> Unit
     ) {
-        val emptyString = ""
         val tableValues = Array(values.size) { lineIndex ->
-            Array(columnHeaders.size) { emptyString }.also { output ->
+            Array(columnHeaders.size) { "" }.also { output ->
                 columnValueProvider(values[lineIndex], output)
             }
         }
