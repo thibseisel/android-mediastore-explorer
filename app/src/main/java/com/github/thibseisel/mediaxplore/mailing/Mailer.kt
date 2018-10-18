@@ -3,13 +3,14 @@ package com.github.thibseisel.mediaxplore.mailing
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.TypefaceSpan
 import com.github.thibseisel.mediaxplore.R
 import com.github.thibseisel.mediaxplore.media.Album
 import com.github.thibseisel.mediaxplore.media.Artist
+
+private const val TYPEFACE_MONOSPACE = "monospace"
 
 class Mailer(private val context: Context) {
 
@@ -169,6 +170,6 @@ private operator fun Int.times(ch: Char): String {
 }
 
 private fun String.monospaced(): Spanned = SpannableString(this).apply {
-    val textSpan = TypefaceSpan(Typeface.MONOSPACE)
+    val textSpan = TypefaceSpan(TYPEFACE_MONOSPACE)
     setSpan(textSpan, 0, this.lastIndex, 0)
 }
