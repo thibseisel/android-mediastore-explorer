@@ -26,6 +26,7 @@ class ArtistFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        setHasOptionsMenu(true)
 
         val context = requireActivity()
         recyclerView.apply {
