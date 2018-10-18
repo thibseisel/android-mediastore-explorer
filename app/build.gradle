@@ -12,10 +12,21 @@ android {
         versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    signingConfigs {
+        release {
+            storeFile file(project.getProperty('android.signing.storeFile'))
+            keyAlias project.getProperty('android.signing.keyAlias')
+            storePassword project.getProperty('android.signing.storePassword')
+            keyPassword project.getProperty('android.signing.keyPassword')
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
