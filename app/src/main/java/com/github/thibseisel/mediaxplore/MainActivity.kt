@@ -10,6 +10,8 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.PopupMenu
+import com.github.thibseisel.mediaxplore.mailing.MediaStoreSharer
 import com.github.thibseisel.mediaxplore.utils.Injector
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -49,9 +51,17 @@ class MainActivity : AppCompatActivity() {
             tabLayout.setupWithViewPager(this)
         }
 
-        mailAction.setOnClickListener {
-            viewModel.sendMediaByEmail()
+        val shareMenu = PopupMenu(this, mailAction)
+        shareMenu.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.share_plain_text -> viewModel.shareMedia(MediaStoreSharer.SHARE_FORMAT_TABLE)
+                R.id.share_csv -> viewModel.shareMedia(MediaStoreSharer.SHARE_FORMAT_CSV)
+            }
+
+            true
         }
+
+        mailAction.setOnClickListener { shareMenu.show() }
     }
 }
 

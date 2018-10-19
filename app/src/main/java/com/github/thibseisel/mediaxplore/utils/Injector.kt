@@ -4,7 +4,7 @@ import android.content.Context
 import com.github.thibseisel.mediaxplore.AlbumViewModel
 import com.github.thibseisel.mediaxplore.ArtistViewModel
 import com.github.thibseisel.mediaxplore.MainActivityViewModel
-import com.github.thibseisel.mediaxplore.mailing.Mailer
+import com.github.thibseisel.mediaxplore.mailing.MediaStoreSharer
 import com.github.thibseisel.mediaxplore.media.MediaDao
 
 object Injector {
@@ -12,7 +12,7 @@ object Injector {
     fun providesMainActivityViewModelFactory(context: Context): MainActivityViewModel.Factory {
         val permissions = PermissionManager.getInstance(context)
         val mediaDao = MediaDao.getInstance(context.contentResolver, permissions)
-        val mailer = Mailer.getInstance(context)
+        val mailer = MediaStoreSharer.getInstance(context)
         return MainActivityViewModel.Factory(mediaDao, mailer)
     }
 

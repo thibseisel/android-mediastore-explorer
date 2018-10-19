@@ -3,6 +3,8 @@ package com.github.thibseisel.mediaxplore.mailing
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.provider.MediaStore.Audio.Albums
+import android.provider.MediaStore.Audio.Artists
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.TypefaceSpan
@@ -17,9 +19,57 @@ private fun String.monospaced(): Spanned = SpannableString(this).apply {
     setSpan(textSpan, 0, this.lastIndex, 0)
 }
 
-class Mailer(private val context: Context) {
+class MediaStoreSharer(private val context: Context) {
 
-    fun sendMediaByEmail(artists: List<Artist>, albums: List<Album>) {
+    fun shareMediaAsCsv(artists: List<Artist>, albums: List<Album>) {
+        val subject = context.getString(R.string.mail_subject)
+        val content = buildString {
+            appendHeading("Artists")
+            appendDataAsCsv(artists, Artists._ID, Artists.ARTIST, Artists.ARTIST_KEY, Artists.NUMBER_OF_ALBUMS,
+                    Artists.NUMBER_OF_TRACKS) { artist, output ->
+                output[0] = artist.id.toString()
+                output[1] = artist.name
+                output[2] = artist.sortKey
+                output[3] = artist.albumCount.toString()
+                output[4] = artist.trackCount.toString()
+            }
+
+            appendHeading("Albums")
+            appendDataAsCsv(albums, Albums._ID, Albums.ALBUM, Albums.ALBUM_KEY, Albums.ARTIST, Albums.FIRST_YEAR,
+                    Albums.LAST_YEAR, Albums.NUMBER_OF_SONGS, Albums.ALBUM_ART) { album, output ->
+                output[0] = album.id.toString()
+                output[1] = album.title
+                output[2] = album.sortKey
+                output[3] = album.artist
+                output[4] = album.firstYear.toString()
+                output[5] = album.lastYear.toString()
+                output[6] = album.numberOfSongs.toString()
+                output[7] = album.albumArt
+            }
+        }
+
+        val sendEmailIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT,  content)
+        }
+
+        val toMailApp = Intent.createChooser(sendEmailIntent, null)
+        context.startActivity(toMailApp)
+    }
+
+    private inline fun <T> Appendable.appendDataAsCsv(values: List<T>, vararg columns: String, lineProvider: (value: T, output: Array<String?>) -> Unit) {
+        columns.joinTo(this, ";")
+
+        val buffer = arrayOfNulls<String>(columns.size)
+        for (value in values) {
+            appendln()
+            lineProvider(value, buffer)
+            buffer.joinTo(this, ";") { it.orEmpty() }
+        }
+    }
+
+    fun shareMediaTable(artists: List<Artist>, albums: List<Album>) {
         val subject = context.getString(R.string.mail_subject)
         val message = buildTextContent(artists, albums)
 
@@ -122,12 +172,15 @@ class Mailer(private val context: Context) {
 
     companion object {
         @SuppressLint("StaticFieldLeak")
-        @Volatile private var instance: Mailer? = null
+        @Volatile private var instance: MediaStoreSharer? = null
+
+        const val SHARE_FORMAT_TABLE = 1
+        const val SHARE_FORMAT_CSV = 2
 
         fun getInstance(context: Context) = instance
                 ?: synchronized(this) {
             instance
-                    ?: Mailer(context).also { instance = it }
+                    ?: MediaStoreSharer(context).also { instance = it }
         }
     }
 }

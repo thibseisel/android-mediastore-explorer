@@ -15,6 +15,8 @@
     <string name="filter_name">Artist name</string>
     <string name="filter_album_count">Number of albums</string>
     <string name="filter_artist">Artist name</string>
+    <string name="share_format_table">As data table</string>
+    <string name="share_format_csv">As CSV file</string>
 
     <style name="mail_subject">A copy of my MediaStore for debugging purposes</style>
 </resources>

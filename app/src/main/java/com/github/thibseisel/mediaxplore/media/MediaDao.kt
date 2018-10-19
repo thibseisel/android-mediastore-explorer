@@ -89,8 +89,7 @@ class MediaDao(
 
         fun getInstance(resolver: ContentResolver, permissions: PermissionManager) =
                 instance ?: synchronized(this) {
-                    instance
-                            ?: MediaDao(resolver, permissions).also { instance = it }
+                    instance ?: MediaDao(resolver, permissions).also { instance = it }
                 }
     }
 }

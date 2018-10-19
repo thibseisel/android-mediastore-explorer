@@ -15,10 +15,16 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(project.getProperty('android.signing.storeFile'))
-            keyAlias project.getProperty('android.signing.keyAlias')
-            storePassword project.getProperty('android.signing.storePassword')
-            keyPassword project.getProperty('android.signing.keyPassword')
+			if (project.hasProperty('android.signing.storeFile') 
+					&& project.hasProperty('android.signing.keyAlias') 
+					&& project.hasProperty('android.signing.storePassword') 
+					&& project.hasProperty('android.signing.keyPassword')) {
+			
+				storeFile file(project.getProperty('android.signing.storeFile'))
+				keyAlias project.getProperty('android.signing.keyAlias')
+				storePassword project.getProperty('android.signing.storePassword')
+				keyPassword project.getProperty('android.signing.keyPassword')
+			}
         }
     }
 

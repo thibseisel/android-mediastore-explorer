@@ -19,7 +19,7 @@
             android:layout_height="?actionBarSize"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
-            tools:title="@string/app_name"/>
+            tools:title="@string/app_name" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabLayout"
@@ -37,9 +37,9 @@
         android:id="@+id/mailAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:fabSize="normal"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        app:srcCompat="@drawable/ic_email_24dp"/>
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_share_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>
