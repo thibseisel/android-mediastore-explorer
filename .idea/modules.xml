@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/android-mediastore-explorer.iml" filepath="$PROJECT_DIR$/android-mediastore-explorer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/csv/csv.iml" filepath="$PROJECT_DIR$/csv/csv.iml" />
     </modules>
   </component>
 </project>

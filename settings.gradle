@@ -1,2 +1,2 @@
 rootProject.name = 'android-mediastore-explorer'
-include ':app'
+include ':app', ':csv'
