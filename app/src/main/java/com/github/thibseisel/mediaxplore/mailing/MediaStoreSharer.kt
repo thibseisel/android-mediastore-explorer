@@ -58,7 +58,7 @@ class MediaStoreSharer(private val context: Context) {
         context.startActivity(toMailApp)
     }
 
-    private inline fun <T> Appendable.appendDataAsCsv(values: List<T>, vararg columns: String, lineProvider: (value: T, output: Array<String?>) -> Unit) {
+    private fun <T> Appendable.appendDataAsCsv(values: List<T>, vararg columns: String, lineProvider: (value: T, output: Array<String?>) -> Unit) {
         columns.joinTo(this, ";")
 
         val buffer = arrayOfNulls<String>(columns.size)
@@ -122,52 +122,7 @@ class MediaStoreSharer(private val context: Context) {
             }
         }
 
-        appendTableInternal(columnHeaders, tableValues)
-    }
-
-    private fun Appendable.appendTableInternal(
-            columnHeaders: Array<out String>,
-            tableValues: Array<Array<String>>
-    ) {
-        val columnWidths = IntArray(columnHeaders.size) { colIndex ->
-            tableValues.fold(columnHeaders[colIndex].length) { acc, valueLine ->
-                maxOf(acc, valueLine[colIndex].length)
-            }
-        }
-
-        for (colIndex in columnHeaders.indices) {
-            val header = columnHeaders[colIndex]
-            val colWidth = columnWidths[colIndex]
-            val emptySpaces = colWidth - header.length
-
-            if (colIndex == 0) {
-                this + '|'
-            }
-
-            this + (emptySpaces * ' ') + header + '|'
-        }
-
-        appendln()
-
-        val totalWidth = columnWidths.sum() + columnHeaders.size + 1
-        this + (totalWidth * '-')
-        appendln()
-
-        for (lineValues in tableValues) {
-
-            for ((colIndex, value) in lineValues.withIndex()) {
-                val colWidth = columnWidths[colIndex]
-                val emptySpaces = colWidth - value.length
-
-                if (colIndex == 0) {
-                    this + '|'
-                }
-
-                this + (emptySpaces * ' ') + value + '|'
-            }
-
-            appendln()
-        }
+        appendTable(columnHeaders, tableValues)
     }
 
     companion object {
