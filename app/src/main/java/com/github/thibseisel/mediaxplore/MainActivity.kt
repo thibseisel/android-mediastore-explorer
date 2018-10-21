@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val shareMenu = PopupMenu(this, mailAction)
+        shareMenu.inflate(R.menu.menu_share)
         shareMenu.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.share_plain_text -> viewModel.shareMedia(MediaStoreSharer.SHARE_FORMAT_TABLE)
