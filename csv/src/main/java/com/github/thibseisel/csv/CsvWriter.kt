@@ -31,7 +31,7 @@ class CsvWriter(
     }
 
     @Throws(IOException::class)
-    fun writeField(value: CharSequence) {
+    fun writeField(value: CharSequence?) {
         check(columnCount > 0) { "Column names must be set before writing values." }
         check(columnIndex < columnCount) {
             "Writing a value at column $columnIndex but only $columnCount are available."
@@ -41,7 +41,10 @@ class CsvWriter(
             writer.append(delimiterChar)
         }
 
-        writeEscaped(value)
+        if (value != null) {
+            writeEscaped(value)
+        }
+
         columnIndex++
     }
 

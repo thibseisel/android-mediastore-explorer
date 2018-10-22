@@ -73,6 +73,27 @@ class CsvWriterTest {
         """.trimIndent())
     }
 
+    @Test
+    fun whenWritingNullField_writeAnEmptyString() {
+        val csv = buildCsv {
+            setColumnNames("ID", "First name", "Last name")
+            newRow()
+            writeField("102")
+            writeField("John")
+            writeField(null)
+            newRow()
+            writeField("103")
+            writeField(null)
+            writeField("Doe")
+        }
+
+        assertThat(csv).isEqualToCRLF("""
+            ID,First name,Last name
+            102,John,
+            103,,Doe
+        """.trimIndent())
+    }
+
     @Test(expected = IllegalStateException::class)
     fun whenWritingTooMuchValues_failsWithException() {
         buildCsv {
