@@ -2,8 +2,8 @@ package com.github.thibseisel.mediaxplore
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import com.github.thibseisel.mediaxplore.export.MediaStoreSharer
 import com.github.thibseisel.mediaxplore.koroutines.ScopedViewModel
-import com.github.thibseisel.mediaxplore.mailing.MediaStoreSharer
 import com.github.thibseisel.mediaxplore.media.MediaDao
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.async

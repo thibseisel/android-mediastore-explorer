@@ -1,4 +1,4 @@
-package com.github.thibseisel.mediaxplore.mailing
+package com.github.thibseisel.mediaxplore.export
 
 operator fun Appendable.plus(cs: CharSequence): Appendable = append(cs)
 operator fun Appendable.plus(c: Char): Appendable = append(c)

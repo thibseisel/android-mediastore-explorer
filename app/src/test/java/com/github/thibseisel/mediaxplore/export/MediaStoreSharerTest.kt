@@ -1,4 +1,4 @@
-package com.github.thibseisel.mediaxplore.mailing
+package com.github.thibseisel.mediaxplore.export
 
 import com.google.common.truth.Truth
 import org.junit.Test

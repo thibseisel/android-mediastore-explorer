@@ -4,7 +4,7 @@ import android.content.Context
 import com.github.thibseisel.mediaxplore.AlbumViewModel
 import com.github.thibseisel.mediaxplore.ArtistViewModel
 import com.github.thibseisel.mediaxplore.MainActivityViewModel
-import com.github.thibseisel.mediaxplore.mailing.MediaStoreSharer
+import com.github.thibseisel.mediaxplore.export.MediaStoreSharer
 import com.github.thibseisel.mediaxplore.media.MediaDao
 
 object Injector {

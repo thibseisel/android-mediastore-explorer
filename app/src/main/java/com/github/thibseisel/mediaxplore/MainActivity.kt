@@ -11,7 +11,7 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.PopupMenu
-import com.github.thibseisel.mediaxplore.mailing.MediaStoreSharer
+import com.github.thibseisel.mediaxplore.export.MediaStoreSharer
 import com.github.thibseisel.mediaxplore.utils.Injector
 import kotlinx.android.synthetic.main.activity_main.*
 
