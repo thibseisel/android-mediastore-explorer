@@ -82,6 +82,13 @@ class CsvWriter(
         }
     }
 
+    /**
+     * Flushes the stream.
+     */
+    fun flush() {
+        writer.flush()
+    }
+
     @Throws(IOException::class)
     override fun close() {
         writer.close()

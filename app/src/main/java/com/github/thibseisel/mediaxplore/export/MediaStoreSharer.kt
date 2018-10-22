@@ -3,7 +3,6 @@ package com.github.thibseisel.mediaxplore.export
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.provider.MediaStore.Audio.Albums
 import android.provider.MediaStore.Audio.Artists
 import android.support.v4.content.FileProvider
@@ -28,7 +27,7 @@ private const val EXPORTED_FILENAME = "media.zip"
 private const val ARTISTS_FILENAME = "artists.csv"
 private const val ALBUMS_FILENAME = "albums.csv"
 private const val MIME_TEXT_PLAIN = "text/plain"
-private const val PROVIDER_AUTHORITY = "com.github.thibseisel.fileprovider"
+private const val PROVIDER_AUTHORITY = "com.github.thibseisel.mediaxplore.fileprovider"
 
 private fun String.monospaced(): Spanned = SpannableString(this).apply {
     val textSpan = TypefaceSpan(TYPEFACE_MONOSPACE)
@@ -41,17 +40,20 @@ class MediaStoreSharer(private val context: Context) {
      * Share the specified media lists by sending them via an email application as a ZIP file attachment.
      */
     suspend fun shareMediaAsCsv(artists: List<Artist>, albums: List<Album>) {
-        val shareDir = File(context.cacheDir, "share")
-        val zipFile = File(shareDir, EXPORTED_FILENAME)
+        val zipFile = withContext(Dispatchers.IO) {
+            val shareDir = File(context.cacheDir, "share")
+            if (!shareDir.exists()) {
+                shareDir.mkdirs()
+            }
 
-        withContext(Dispatchers.IO) {
-            writeMediaToZip(zipFile, artists, albums)
+            File(shareDir, EXPORTED_FILENAME).also {
+                writeMediaToZip(it, artists, albums)
+            }
         }
 
         val sharedFileUri = FileProvider.getUriForFile(context, PROVIDER_AUTHORITY, zipFile)
-        val sendEmailIntent = Intent(Intent.ACTION_SENDTO).apply {
+        val sendEmailIntent = Intent(Intent.ACTION_SEND).apply {
             type = MIME_TEXT_PLAIN
-            data = Uri.parse("mailto:")
             putExtra(Intent.EXTRA_SUBJECT, context.getString(R.string.mail_subject))
             putExtra(Intent.EXTRA_STREAM, sharedFileUri)
         }
@@ -125,7 +127,7 @@ class MediaStoreSharer(private val context: Context) {
         values: List<T>,
         transform: (value: T, output: Array<in CharSequence?>) -> Unit
     ) {
-        CsvWriter(output.writer()).use { writer ->
+        CsvWriter(output.writer()).let { writer ->
             writer.setColumnNames(*columns)
 
             val buffer = arrayOfNulls<CharSequence>(columns.size)
@@ -135,6 +137,8 @@ class MediaStoreSharer(private val context: Context) {
                 writer.newRow()
                 buffer.forEach(writer::writeField)
             }
+
+            writer.flush()
         }
     }
 
